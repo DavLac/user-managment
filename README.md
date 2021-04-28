@@ -1,5 +1,16 @@
 # Simple User CRUD
 
+## User entity
+```
+  {
+    "id": Long,
+    "name": String,
+    "password": String,
+    "creationDateTime": Date
+  }
+  ```
+
+
 ## Endpoints
 - GET /users
 - GET /users/{id}
@@ -20,6 +31,14 @@
   }
   ```
 - DELETE /users/{id}
+
+## Run the app
+
+### with Docker
+Run `docker-compose up` command
+
+### with Maven
+Check the **Prerequisites** section and after run `mvn spring-boot:run` command
 
 ## Prerequisites
 
