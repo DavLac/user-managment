@@ -1,0 +1,29 @@
+version: '3'
+services:
+  user-app:
+    image: davlac/user-crud
+    environment:
+      - _JAVA_OPTIONS=-Xmx512m -Xms256m
+      - SPRING_DATASOURCE_URL=jdbc:mysql://user-mysql:3306/user?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+    ports:
+      - 8081:8080
+
+    # WAITING FOR DB
+    depends_on:
+      user-mysql:
+        condition: service_healthy
+  user-mysql:
+    image: mysql:8.0.24
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=user
+    ports:
+      - 3306:3306
+    command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8mb4 --explicit_defaults_for_timestamp
+
+    # HEALTHCHECK TO WAIT DB
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
