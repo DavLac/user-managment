@@ -16,3 +16,6 @@ info:
 server:
   port: 8080
   shutdown: graceful
+  error:
+    include-message: always
+    include-binding-errors: always

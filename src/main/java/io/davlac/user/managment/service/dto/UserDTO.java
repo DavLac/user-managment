@@ -1,15 +1,11 @@
-package io.davlac.user.managment.domain;
+package io.davlac.user.managment.service.dto;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import io.davlac.user.managment.domain.Role;
+
 import java.time.Instant;
 
-@Entity
-public class User {
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+public class UserDTO {
+
     private Long id;
 
     private String name;
@@ -18,7 +14,7 @@ public class User {
 
     private Role role;
 
-    private final Instant creationDateTime = Instant.now();
+    private Instant creationDateTime;
 
     public Long getId() {
         return id;
@@ -40,6 +36,10 @@ public class User {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public Role getRole() {
         return role;
     }
@@ -48,11 +48,11 @@ public class User {
         this.role = role;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Instant getCreationDateTime() {
         return creationDateTime;
+    }
+
+    public void setCreationDateTime(Instant creationDateTime) {
+        this.creationDateTime = creationDateTime;
     }
 }

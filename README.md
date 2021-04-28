@@ -3,12 +3,13 @@
 ## User entity
 ```
   {
-    "id": Long,
-    "name": String,
-    "password": String,
-    "creationDateTime": Date
+      "id": Long,
+      "name": String,
+      "password": String,
+      "role": ['ADMIN', 'CLIENT'],
+      "creationDateTime": Date
   }
-  ```
+```
 
 
 ## Endpoints
@@ -19,7 +20,8 @@
   # body #
   {
     "name": String,
-    "password": String
+    "password": String,
+    "role": ['ADMIN', 'CLIENT']
   }
   ```
 - PUT /users/{id}
@@ -27,7 +29,8 @@
   # body #
   {
     "name": String,
-    "password": String
+    "password": String,
+    "role": ['ADMIN', 'CLIENT']
   }
   ```
 - DELETE /users/{id}

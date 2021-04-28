@@ -1,4 +1,4 @@
-version: '3'
+version: '2.1'
 services:
   user-app:
     image: davlac/user-crud
@@ -15,7 +15,6 @@ services:
   user-mysql:
     image: mysql:8.0.24
     environment:
-      - MYSQL_USER=root
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
       - MYSQL_DATABASE=user
     ports:
@@ -25,5 +24,5 @@ services:
     # HEALTHCHECK TO WAIT DB
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      timeout: 10s
+      timeout: 20s
       retries: 10

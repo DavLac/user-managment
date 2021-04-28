@@ -1,8 +1,9 @@
 package io.davlac.user.managment.controller;
 
-import io.davlac.user.managment.controller.error.NotFoundException;
-import io.davlac.user.managment.domain.User;
-import io.davlac.user.managment.repository.UserRepository;
+import io.davlac.user.managment.service.UserService;
+import io.davlac.user.managment.service.dto.UserCreationDTO;
+import io.davlac.user.managment.service.dto.UserDTO;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,47 +11,44 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("users")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @GetMapping("{id}")
-    public User getUserById(@PathVariable long id) {
-        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+    @GetMapping("{name}")
+    public UserDTO getUserByName(@PathVariable String name) {
+        return userService.getUserByName(name);
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public Page<UserDTO> getUsers(
+            @RequestParam(defaultValue = "0", required = false) int pageNumber,
+            @RequestParam(defaultValue = "50", required = false) int size) {
+        return userService.getUsers(pageNumber, size);
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userRepository.save(user);
+    public UserDTO createUser(@RequestBody UserCreationDTO user) {
+        return userService.createUser(user);
     }
 
-    @PutMapping("{id}")
-    public User modifyUserById(@PathVariable long id, @RequestBody User userToModify) {
-        User user = getUserById(id);
-        user.setName(userToModify.getName());
-        user.setPassword(userToModify.getPassword());
-        return userRepository.save(user);
+    @PutMapping("{name}")
+    public UserDTO modifyUserByName(@PathVariable String name, @RequestBody UserCreationDTO userToModify) {
+        return userService.modifyUserByName(name, userToModify);
     }
 
-    @DeleteMapping("{id}")
-    public void deleteUserById(@PathVariable long id) {
-        getUserById(id);
-        userRepository.deleteById(id);
+    @DeleteMapping("{name}")
+    public void deleteUserByName(@PathVariable String name) {
+        userService.deleteUserByName(name);
     }
 
 }
