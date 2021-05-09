@@ -22,5 +22,5 @@ server:
 
 app:
   user:
-    expiration-time-second: 1800
-    refresh-token-time-second: 86400
+    expiration-time-second: 60 # 1 min
+    refresh-token-time-second: 86400 # 1 day

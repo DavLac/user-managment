@@ -2,7 +2,7 @@ package io.davlac.user.managment.service.dto;
 
 import io.davlac.user.managment.domain.Role;
 
-public class UserTokenDTO {
+public class UserAccessTokenDTO {
 
     private String name;
 
@@ -12,7 +12,7 @@ public class UserTokenDTO {
 
     private Long refreshTokenTime;
 
-    public UserTokenDTO(String name, Role role, Long expirationTime, Long refreshTokenTime) {
+    public UserAccessTokenDTO(String name, Role role, Long expirationTime, Long refreshTokenTime) {
         this.name = name;
         this.role = role;
         this.expirationTime = expirationTime;

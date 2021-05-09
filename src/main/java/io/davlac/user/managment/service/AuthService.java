@@ -1,18 +1,18 @@
 package io.davlac.user.managment.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.davlac.user.managment.controller.error.InternalServerException;
 import io.davlac.user.managment.controller.error.UnauthorizedException;
 import io.davlac.user.managment.domain.User;
 import io.davlac.user.managment.repository.UserRepository;
+import io.davlac.user.managment.service.dto.UserAccessTokenDTO;
 import io.davlac.user.managment.service.dto.UserLoginDTO;
-import io.davlac.user.managment.service.dto.UserTokenDTO;
+import io.davlac.user.managment.service.dto.UserRefreshTokenDTO;
+import io.davlac.user.managment.service.dto.UserTokenResponseDTO;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.Base64;
 
 @Service
 public class AuthService {
@@ -23,7 +23,8 @@ public class AuthService {
     @Value("${app.user.refresh-token-time-second}")
     private Long refreshTokenTime;
 
-    ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final Base64 base64 = new Base64();
 
     private final UserRepository userRepository;
 
@@ -31,12 +32,30 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    public String login(UserLoginDTO userLoginDTO) {
+    public UserTokenResponseDTO login(UserLoginDTO userLoginDTO) {
         User user = userRepository.findByName(userLoginDTO.getName()).orElseThrow(UnauthorizedException::new);
 
         checkPassword(userLoginDTO.getPassword(), user.getPassword());
 
-        return buildToken(user);
+        return new UserTokenResponseDTO(
+                buildAccessToken(user),
+                buildRefreshToken(user)
+        );
+    }
+
+    public UserTokenResponseDTO refreshToken(String refreshToken) {
+        UserRefreshTokenDTO userRefreshTokenDTO = stringToRefreshTokenObject(refreshToken);
+
+        User user = userRepository.findByName(userRefreshTokenDTO.getName()).orElseThrow(UnauthorizedException::new);
+
+        if (!user.getPassword().equals(userRefreshTokenDTO.getPassword())) {
+            throw new UnauthorizedException();
+        }
+
+        return new UserTokenResponseDTO(
+                buildAccessToken(user),
+                buildRefreshToken(user)
+        );
     }
 
     private static void checkPassword(String inputPassword, String dbHashedPassword) {
@@ -50,14 +69,33 @@ public class AuthService {
     private String objectToStringJson(Object objectToConvert) {
         try {
             return mapper.writeValueAsString(objectToConvert);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new InternalServerException(String.format("Fail to serialize object = '%s'", objectToConvert.toString()));
         }
     }
 
-    private String buildToken(User user) {
-        UserTokenDTO userTokenDTO = new UserTokenDTO(user.getName(), user.getRole(), expirationTime, refreshTokenTime);
-        String userTokenStringJson = objectToStringJson(userTokenDTO);
-        return Base64.getEncoder().encodeToString(userTokenStringJson.getBytes());
+    private UserRefreshTokenDTO stringJsonToUserRefreshTokenDTO(String stringObject) {
+        try {
+            return mapper.readValue(stringObject, UserRefreshTokenDTO.class);
+        } catch (Exception e) {
+            throw new InternalServerException(String.format("Fail to deserialize string = '%s'", stringObject));
+        }
+    }
+
+    private UserRefreshTokenDTO stringToRefreshTokenObject(String refreshToken) {
+        String stringRefreshTokenDecoded = new String(base64.decode(refreshToken.getBytes()));
+        return stringJsonToUserRefreshTokenDTO(stringRefreshTokenDecoded);
+    }
+
+    private String buildAccessToken(User user) {
+        UserAccessTokenDTO userAccessTokenDTO = new UserAccessTokenDTO(user.getName(), user.getRole(), expirationTime, refreshTokenTime);
+        String userAccessTokenDTOStringJson = objectToStringJson(userAccessTokenDTO);
+        return new String(base64.encode(userAccessTokenDTOStringJson.getBytes()));
+    }
+
+    private String buildRefreshToken(User user) {
+        UserRefreshTokenDTO userRefreshTokenDTO = new UserRefreshTokenDTO(user.getName(), user.getPassword());
+        String userRefreshTokenDTOStringJson = objectToStringJson(userRefreshTokenDTO);
+        return new String(base64.encode(userRefreshTokenDTOStringJson.getBytes()));
     }
 }
