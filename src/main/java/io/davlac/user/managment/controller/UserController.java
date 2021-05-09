@@ -4,6 +4,7 @@ import io.davlac.user.managment.service.UserService;
 import io.davlac.user.managment.service.dto.UserCreationDTO;
 import io.davlac.user.managment.service.dto.UserDTO;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,30 +26,31 @@ public class UserController {
     }
 
     @GetMapping("{name}")
-    public UserDTO getUserByName(@PathVariable String name) {
-        return userService.getUserByName(name);
+    public ResponseEntity<UserDTO> getUserByName(@PathVariable String name) {
+        return ResponseEntity.ok(userService.getUserByName(name));
     }
 
     @GetMapping
-    public Page<UserDTO> getUsers(
+    public ResponseEntity<Page<UserDTO>> getUsers(
             @RequestParam(defaultValue = "0", required = false) int pageNumber,
             @RequestParam(defaultValue = "50", required = false) int size) {
-        return userService.getUsers(pageNumber, size);
+        return ResponseEntity.ok(userService.getUsers(pageNumber, size));
     }
 
     @PostMapping
-    public UserDTO createUser(@RequestBody UserCreationDTO user) {
-        return userService.createUser(user);
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserCreationDTO user) {
+        return ResponseEntity.ok(userService.createUser(user));
     }
 
     @PutMapping("{name}")
-    public UserDTO modifyUserByName(@PathVariable String name, @RequestBody UserCreationDTO userToModify) {
-        return userService.modifyUserByName(name, userToModify);
+    public ResponseEntity<UserDTO> modifyUserByName(@PathVariable String name, @RequestBody UserCreationDTO userToModify) {
+        return ResponseEntity.ok(userService.modifyUserByName(name, userToModify));
     }
 
     @DeleteMapping("{name}")
-    public void deleteUserByName(@PathVariable String name) {
+    public ResponseEntity<Void> deleteUserByName(@PathVariable String name) {
         userService.deleteUserByName(name);
+        return ResponseEntity.accepted().build();
     }
 
 }

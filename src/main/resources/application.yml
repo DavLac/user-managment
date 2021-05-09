@@ -19,3 +19,8 @@ server:
   error:
     include-message: always
     include-binding-errors: always
+
+app:
+  user:
+    expiration-time-second: 1800
+    refresh-token-time-second: 86400

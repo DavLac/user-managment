@@ -13,8 +13,14 @@
 
 
 ## Endpoints
+### User entity
 - GET /users
-- GET /users/{id}
+  ```
+  # parameters #
+  pageNumber: int,
+  size: int
+  ```
+- GET /users/{name}
 - POST /users
   ```
   # body #
@@ -24,7 +30,7 @@
     "role": ['ADMIN', 'CLIENT']
   }
   ```
-- PUT /users/{id}
+- PUT /users/{name}
   ```
   # body #
   {
@@ -33,7 +39,28 @@
     "role": ['ADMIN', 'CLIENT']
   }
   ```
-- DELETE /users/{id}
+- DELETE /users/{name}
+
+### Authentication entity
+- GET /auth/login
+  ```
+  # body #
+  {
+    "name": String,
+    "password": String
+  }
+  ```
+Response :
+  ```
+  Encoded base64 token.
+  Decoded value :
+  {
+    "name": String,
+    "role": ['ADMIN', 'CLIENT'],
+    "expirationTime": Long,
+    "refreshTokenTime": Long
+  }
+  ```
 
 ## Run the app
 

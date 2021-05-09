@@ -11,8 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +27,7 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public UserDTO getUserByName(@PathVariable String name) {
+    public UserDTO getUserByName(String name) {
         User user = getUserEntityByName(name);
         return userMapper.toDto(user);
     }
@@ -44,7 +42,7 @@ public class UserService {
         return new PageImpl<>(userDtoList, userPage.getPageable(), userPage.getTotalPages());
     }
 
-    public UserDTO createUser(@RequestBody UserCreationDTO userToCreate) {
+    public UserDTO createUser(UserCreationDTO userToCreate) {
         checkIfUserAlreadyExist(userToCreate.getName());
 
         User user = userMapper.toEntity(userToCreate);
@@ -52,7 +50,7 @@ public class UserService {
         return userMapper.toDto(userSaved);
     }
 
-    public UserDTO modifyUserByName(@PathVariable String name, @RequestBody UserCreationDTO userDtoToModify) {
+    public UserDTO modifyUserByName(String name, UserCreationDTO userDtoToModify) {
         User user = getUserEntityByName(name);
 
         if (!name.equals(userDtoToModify.getName())) {
@@ -65,7 +63,7 @@ public class UserService {
         return userMapper.toDto(userModified);
     }
 
-    public void deleteUserByName(@PathVariable String name) {
+    public void deleteUserByName(String name) {
         User user = getUserEntityByName(name);
         userRepository.deleteById(user.getId());
     }
