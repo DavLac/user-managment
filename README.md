@@ -42,7 +42,7 @@
 - DELETE /users/{name}
 
 ### Authentication entity
-- GET /auth/login
+- POST /auth/login
   ```
   # body #
   {
@@ -52,14 +52,24 @@
   ```
 Response :
   ```
-  Encoded base64 token.
-  Decoded value :
+  Encoded base64 access and refresh token.
+  Decoded access token value :
   {
     "name": String,
     "role": ['ADMIN', 'CLIENT'],
     "expirationTime": Long,
     "refreshTokenTime": Long
   }
+  ```
+
+- POST /auth/refresh
+  ```
+  # parameter #
+   "refreshToken": String
+  ```
+Response :
+  ```
+  Encoded base64 access and refresh token.
   ```
 
 ## Run the app
